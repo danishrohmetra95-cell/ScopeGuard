@@ -15,7 +15,7 @@ import {
 import { useState, useEffect } from 'react';
 
 const navItems = [
-  { to: '/', label: 'Overview', icon: LayoutDashboard },
+  { to: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { to: '/commit', label: 'Commit Analysis', icon: GitCommitHorizontal },
   { to: '/graph', label: 'Dependency Graph', icon: Network },
   { to: '/tests', label: 'Test Selection', icon: TestTube2 },
@@ -50,7 +50,7 @@ export default function AppLayout() {
 
   const getPageTitle = () => {
     const route = navItems.find(item => 
-      item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to)
+      item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)
     );
     return route ? route.label : 'Dashboard';
   };
@@ -91,7 +91,7 @@ export default function AppLayout() {
             <NavLink
               key={to}
               to={to}
-              end={to === '/'}
+              end={to === '/dashboard'}
               className={({ isActive }) => `
                 flex items-center gap-3 px-2 py-1.5 rounded transition-colors group
                 ${isActive 

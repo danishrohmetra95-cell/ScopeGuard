@@ -1,34 +1,26 @@
-
+version: '3.8'
 
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.backend
     ports:
       - "8000:8000"
     environment:
-      - SCOPEGUARD_HOST=0.0.0.0
-      - SCOPEGUARD_PORT=8000
-      - SCOPEGUARD_ENVIRONMENT=production
-      - SCOPEGUARD_CORS_ORIGINS=http://localhost,http://localhost:80
-      - SCOPEGUARD_RISK_THRESHOLD=75
+      - ENVIRONMENT=production
+      - CORS_ORIGINS=http://localhost,http://localhost:5173
     volumes:
-      - ./sample-repository:/data/sample-repository:ro
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
+      # Optional: Mount your local projects directory here if you want to analyze them via container
+      - ./temp_repos:/app/temp_repos
     restart: unless-stopped
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.frontend
     ports:
       - "80:80"
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     restart: unless-stopped
