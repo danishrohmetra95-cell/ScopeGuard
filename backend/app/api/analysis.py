@@ -6,13 +6,20 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 
 def _resolve_repo_path(path_str: str) -> Path:
-    """Resolve a local repository path."""
-        
+    """Resolve a local repository path or acquire GitHub URL."""
     if path_str.startswith("http://") or path_str.startswith("https://"):
-        raise HTTPException(
-            status_code=400, 
-            detail="Remote GitHub URLs must be analyzed via the /api/analyze/github endpoint."
-        )
+        from app.services.github_service import GitHubService
+        import tempfile
+        import shutil
+        import atexit
+        from git import Repo
+        service = GitHubService()
+        clean_url = service._validate_and_normalize_url(path_str)
+        temp_dir = Path(tempfile.mkdtemp(prefix='scopeguard_auto_'))
+        # Register cleanup to avoid completely filling disk, though container restarts help
+        atexit.register(lambda: shutil.rmtree(temp_dir, ignore_errors=True))
+        Repo.clone_from(clean_url, temp_dir)
+        return temp_dir
     
     p = Path(path_str)
     if not p.is_absolute():
