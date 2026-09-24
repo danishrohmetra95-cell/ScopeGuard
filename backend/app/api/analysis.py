@@ -14,7 +14,7 @@ def _resolve_repo_path(path_str: str) -> Path:
         import atexit
         from git import Repo
         service = GitHubService()
-        clean_url = service._validate_and_normalize_url(path_str)
+        clean_url = service.validate_url(path_str)
         temp_dir = Path(tempfile.mkdtemp(prefix='scopeguard_auto_'))
         # Register cleanup to avoid completely filling disk, though container restarts help
         atexit.register(lambda: shutil.rmtree(temp_dir, ignore_errors=True))
